@@ -117,4 +117,7 @@ func main() {
       createImage(name, color)
     }
   }
+
+  createImage("new", Color{"", "#008000"})
+  createImage("creator", Color{"", "#4BACC6"})
 }
