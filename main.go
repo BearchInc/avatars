@@ -57,6 +57,7 @@ var colors = []Color{
 	{"forest", "#006837"},
 	{"navy", "#0071BC"},
 	{"teal", "#00A99D"},
+	{"orange", "#F7931E"}, // orange is the new pumpkin
 }
 
 func findImage(name string) image.Image {
