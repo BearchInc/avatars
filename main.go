@@ -5,6 +5,7 @@ import (
 	"fmt"
 	c2 "github.com/unseen/avatars/color"
 	"image"
+	"image/color"
 	"image/draw"
 	"image/png"
 	_ "math"
@@ -74,7 +75,7 @@ func findImage(name string) image.Image {
 	return m
 }
 
-func createImage(name string, c Color) {
+func createImageWithBackgroundColor(name string, c Color) {
 	in := findImage(name)
 	background := image.NewUniform(c2.Hex(c.Value))
 	dst := image.NewRGBA(in.Bounds())
@@ -98,13 +99,42 @@ func createImage(name string, c Color) {
 	}
 }
 
-func main() {
-	for _, name := range names {
-		for _, color := range colors {
-			createImage(name, color)
+func createInverted(name string) {
+	in := findImage(name)
+
+	bounds := in.Bounds()
+
+	dst := image.NewRGBA(bounds)
+
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			c := in.At(x, y)
+			r, g, b, a := c.RGBA()
+			dst.Set(x, y, color.RGBA{uint8(65535 - r), uint8(65535 - g), uint8(65535 - b), uint8(65535 - a)})
 		}
 	}
 
-	createImage("new", Color{"", "#008000"})
-	createImage("creator", Color{"", "#4BACC6"})
+	out, err := os.Create(fmt.Sprintf("out/inverted_%v.png", name))
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = png.Encode(out, dst)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func main() {
+	for _, name := range names {
+		for _, color := range colors {
+			createImageWithBackgroundColor(name, color)
+		}
+		createInverted(name)
+	}
+
+	createImageWithBackgroundColor("new", Color{"", "#008000"})
+	createImageWithBackgroundColor("creator", Color{"", "#4BACC6"})
 }
